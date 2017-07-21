@@ -1,0 +1,191 @@
+from tkinter import *
+from tkinter.filedialog import *
+from tkinter import ttk
+
+class WidgetCreator:
+
+    @staticmethod
+    def create_separator_widget(parent, title):
+        frame = ttk.Frame(parent).pack(side=TOP, fill=X, expand=YES)
+        label = ttk.Label(parent, text=title).pack(side=LEFT, fill=X, expand=NO)
+        ttk.Separator(parent, orient=HORIZONTAL).pack(side=TOP, fill=X, expand=YES)
+        return frame
+
+    @staticmethod
+    def create_list_widget(parent, name):
+        frame = Frame(parent)
+        label = Label(frame, text=name)
+        list_box = WidgetCreator.create_listbox_with_scrollbar(frame)
+        # Layout
+        label.pack(side=TOP, fill=BOTH)
+        list_box.pack(side=BOTTOM, fill=BOTH, expand=YES)
+        return frame, list_box
+
+    @staticmethod
+    def create_data_entry(parent, name):
+        size = len(name)
+        frame = Frame(parent)
+        label = Label(frame, text=name, width=size + 5)
+        entry_var = StringVar()
+        entry = ttk.Entry(frame, textvariable=entry_var)
+        # Layout
+        label.pack(side=LEFT, expand=NO)
+        entry.pack(side=LEFT, fill=X, expand=YES)
+        return frame, entry, entry_var
+
+    @staticmethod
+    def create_button(parent, name):
+        button = ttk.Button(parent, text=name)
+        # layout
+        button.pack(side=RIGHT)
+        return button
+
+    @staticmethod
+    def create_menu(parent,list_of_name, list_of_func):
+        menu = Menu(parent,tearoff=0)
+        for index in range(len(list_of_name)):
+            menu.add_command(label=list_of_name[index], command=list_of_func[index])
+        return menu
+
+    @staticmethod
+    def create_listbox_with_scrollbar(parent):
+        scrollbar = Scrollbar(parent)
+        listbox = Listbox(parent, yscrollcommand=scrollbar.set, selectmode=MULTIPLE)
+        scrollbar.config(command=listbox.yview)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        return listbox
+
+    @staticmethod
+    def create_combobox(parent, tuple_of_elements):
+        combobox_var = StringVar()
+        combobox = ttk.Combobox(parent, textvariable=combobox_var)
+        #combobox.config(values=tuple_of_elements)
+        combobox['values'] = tuple_of_elements
+        combobox.current(0)
+        return combobox, combobox_var
+
+    @staticmethod
+    def create_entry(parent):
+        entry_var = StringVar()
+        entry = Entry(parent, textvariable=entry_var)
+        return entry, entry_var
+
+    @staticmethod
+    def create_radio_button(parent, label):
+        radio_var = IntVar()
+        radio_button = Radiobutton(parent, text=label, variable=radio_var)
+        return radio_button, radio_var
+
+    @staticmethod
+    def create_spinbox(parent):
+        spinbox_var = IntVar()
+        spinbox = Spinbox(parent, textvariable=spinbox_var, values=(4, 5, 6, 7))
+        return spinbox, spinbox_var
+
+class FileSelectionFrame(WidgetCreator):
+    # constants
+    _button_browses_text = "+"
+    _button_remove_text = "-"
+    _label_frame_select_files_text = 'Select files to work on'
+    _label_file_paths = 'File paths:'
+
+    def __init__(self, parent):
+        self._frame = ttk.Frame(parent)
+        self._label_frame_select_files, self._button_browse_files, self._button_remove_files, self._listbox_paths_frame, self._list_box = self._create_widgets(self._frame,
+                                                                                                                              self._button_browses_text,self._button_remove_text,
+                                                                                                                              self._label_file_paths)
+        self._button_browse_files.config(command=self._get_file_paths_dialog)
+        self._button_remove_files.config(command=self._remove_selected_file_paths)
+        self._label_frame_select_files.pack(fill=BOTH, expand=YES)
+
+    def _create_widgets(self, parent, button1_name, button2_name, label_name):
+        # widgets
+        frame = ttk.Frame(parent)
+        button_browse_files = ttk.Button(frame, text=button1_name)
+        button_remove_files = ttk.Button(frame, text=button2_name)
+        listbox_paths_frame, list_box = WidgetCreator.create_list_widget(frame, label_name)
+        # layout
+        listbox_paths_frame.pack(side=TOP, fill=BOTH, expand=YES)
+        button_browse_files.pack(side=RIGHT, expand=NO)
+        button_remove_files.pack(side=RIGHT, expand=NO)
+        return frame, button_browse_files,button_remove_files, listbox_paths_frame, list_box
+
+    @property
+    def get_frame(self):
+        return self._frame
+
+    @property
+    def get_file_paths(self):
+        return list(self._list_box.get(0,END))
+
+    def _get_file_paths_dialog(self):
+        file_paths = askopenfilenames()
+        file_paths_included = list(self._list_box.get(0, END))
+        for file_path in file_paths:
+            if not file_paths_included.__contains__(file_path):
+                self._list_box.insert(END, file_path)
+
+    def _remove_selected_file_paths(self):
+        index = 0
+        for selected_index in self._list_box.curselection():
+            self._list_box.delete(selected_index - index)
+            index += 1
+
+
+class ReplaceFrame(WidgetCreator):
+    def __init__(self, parent):
+        self._frame = LabelFrame(parent)
+        self.create_widgets()
+
+    def create_widgets(self):
+        # label frames
+        label_frame_entry = ttk.LabelFrame(self._frame, text="Add replacement strings")
+        label_frame_list = ttk.LabelFrame(self._frame, text="List of replacement strings")
+
+        # frames
+        frame_entries = Frame(label_frame_entry)
+        frame_buttons = Frame(label_frame_entry)
+        frame_list_boxes = Frame(label_frame_list)
+
+        # buttons
+        button = self.create_button(frame_buttons, 'Add')
+        button.config(command=self._add_event)
+
+        # entries
+        frame_entry_old, entry_old, entry_var_old = self.create_data_entry(frame_entries, 'Old:')
+        frame_entry_new, entry_new, entry_var_new = self.create_data_entry(frame_entries, 'New:')
+
+        # list boxes
+        frame_listbox_old, list_box_old = self.create_list_widget(frame_list_boxes, 'Old')
+        frame_listbox_new, list_box_new = self.create_list_widget(frame_list_boxes, 'New')
+
+        #layout
+        frame_entry_old.pack(side=TOP, fill=BOTH, expand=YES)
+        frame_entry_new.pack(side=TOP, fill=BOTH, expand=YES)
+
+        frame_listbox_old.pack(side=LEFT, fill=BOTH, expand=YES)
+        frame_listbox_new.pack(side=RIGHT, fill=BOTH, expand=YES)
+
+        frame_list_boxes.pack(side=BOTTOM, fill=BOTH, expand=YES)
+        frame_entries.pack(side=TOP, fill=BOTH, expand=YES)
+        frame_buttons.pack(side=TOP, fill=X, expand=NO)
+
+        label_frame_entry.pack(side=TOP, fill=BOTH, expand=YES)
+        label_frame_list.pack(side=BOTTOM, fill=BOTH, expand=YES)
+
+        # Label frame file
+        for child in label_frame_entry.winfo_children():
+            child.pack_configure(padx=5, pady=5)
+
+        for child in label_frame_list.winfo_children():
+            child.pack_configure(padx=5, pady=5)
+
+    @property
+    def replace_frame(self):
+        return self._frame
+
+    def _add_event(self):
+        print(self._entry_var_old.get())
+        print(self._entry_var_new.get())
+        self._list_box_old.insert(END, self._entry_var_old.get())
+        self._list_box_new.insert(END, self._entry_var_new.get())
