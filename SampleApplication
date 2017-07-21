@@ -5,7 +5,7 @@ from tkinter.filedialog import *
 class WidgetCreator:
 
     @staticmethod
-    def create_seperator_widget(parent, title):
+    def create_separator_widget(parent, title):
         frame = ttk.Frame(parent).pack(side=TOP, fill=X, expand=YES)
         label = ttk.Label(parent, text=title).pack(side=LEFT, fill=X, expand=NO)
         ttk.Separator(parent, orient=HORIZONTAL).pack(side=TOP, fill=X, expand=YES)
@@ -15,7 +15,8 @@ class WidgetCreator:
     def create_list_widget(parent, name):
         frame = Frame(parent)
         label = Label(frame, text=name)
-        list_box = Listbox(frame, selectmode=MULTIPLE)
+        #list_box = Listbox(frame, selectmode=MULTIPLE)
+        list_box = WidgetCreator.create_listbox_with_scrollbar(frame)
         # TODO: add scroll bar
         # Layout
         label.pack(side=TOP, fill=BOTH)
@@ -41,8 +42,57 @@ class WidgetCreator:
         button.pack(side=RIGHT)
         return button
 
+    @staticmethod
+    def create_menu(parent,list_of_name, list_of_func):
+        menu = Menu(parent,tearoff=0)
+        for index in range(len(list_of_name)):
+            menu.add_command(label=list_of_name[index],command=list_of_func[index])
+        return menu
 
-class FileFrame(WidgetCreator):
+    @staticmethod
+    def create_menu_bar(parent):
+        menu_bar = Menu(parent)
+        menu = WidgetCreator.create_menu(menu_bar,['Exit1','Exit2'],[parent.quit,parent.quit])
+        menu_bar.add_cascade(label="File", menu=menu)
+        return menu_bar
+
+    @staticmethod
+    def create_listbox_with_scrollbar(parent):
+        scrollbar = Scrollbar(parent)
+        listbox = Listbox(parent, yscrollcommand=scrollbar.set, selectmode=MULTIPLE)
+        scrollbar.config(command=listbox.yview)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        return listbox
+
+    @staticmethod
+    def create_combobox(parent, tuple_of_elements):
+        combobox_var = StringVar()
+        combobox = ttk.Combobox(parent, textvariable=combobox_var)
+        #combobox.config(values=tuple_of_elements)
+        combobox['values'] = tuple_of_elements
+        combobox.current(0)
+        return combobox, combobox_var
+
+    @staticmethod
+    def create_entry(parent):
+        entry_var = StringVar()
+        entry = Entry(parent, textvariable=entry_var)
+        return entry, entry_var
+
+    @staticmethod
+    def create_radio_button(parent, label):
+        radio_var = IntVar()
+        radio_button = Radiobutton(parent, text=label, variable=radio_var)
+        return radio_button, radio_var
+
+    @staticmethod
+    def create_spinbox(parent):
+        spinbox_var = IntVar()
+        spinbox = Spinbox(parent, textvariable=spinbox_var, values=(4, 5, 6, 7))
+        return spinbox, spinbox_var
+
+
+class FileSelectionFrame(WidgetCreator):
     # constants
     _button_browses_text = "Browses..."
     _label_frame_select_files_text = 'Select files to work on'
@@ -50,22 +100,21 @@ class FileFrame(WidgetCreator):
 
     def __init__(self, parent):
         self._frame = ttk.Frame(parent)
-        self._label_frame_select_files, self._button_browse_files, self._listbox_paths_frame, list_box = self._create_widgets(self._frame,
+        self._label_frame_select_files, self._button_browse_files, self._listbox_paths_frame, self._list_box = self._create_widgets(self._frame,
                                                                                                                               self._button_browses_text,
-                                                                                                                              self._label_file_paths,
-                                                                                                                              self._label_frame_select_files_text)
+                                                                                                                              self._label_file_paths)
         self._button_browse_files.config(command=self._get_file_paths_dialog)
         self._label_frame_select_files.pack(fill=BOTH, expand=YES)
 
-    def _create_widgets(self, parent, button_name, label_name, seperator_name):
+    def _create_widgets(self, parent, button_name, label_name):
         # widgets
-        label_frame_select_files = ttk.LabelFrame(parent, text=seperator_name)
-        button_browse_files = ttk.Button(label_frame_select_files, text=button_name)
-        listbox_paths_frame, list_box = WidgetCreator.create_list_widget(label_frame_select_files, button_name)
+        frame = ttk.Frame(parent)
+        button_browse_files = ttk.Button(frame, text=button_name)
+        listbox_paths_frame, list_box = WidgetCreator.create_list_widget(frame, label_name)
         # layout
         listbox_paths_frame.pack(side=TOP, fill=BOTH, expand=YES)
         button_browse_files.pack(side=RIGHT, expand=NO)
-        return label_frame_select_files, button_browse_files, listbox_paths_frame, list_box
+        return frame, button_browse_files, listbox_paths_frame, list_box
 
     @property
     def get_file_frame(self):
@@ -73,8 +122,11 @@ class FileFrame(WidgetCreator):
 
     def _get_file_paths_dialog(self):
         file_paths = askopenfilenames()
+        file_paths_included = list(self._list_box.get(0, END))
         for file_path in file_paths:
-            print(file_path)
+            if not file_paths_included.__contains__(file_path):
+                self._list_box.insert(END, file_path)
+
 
 
 class ReplaceFrame(WidgetCreator):
@@ -147,7 +199,7 @@ root = Tk()
 root.withdraw()
 top2 = Toplevel(root)
 top2.title("File path selections")
-frame_file = FileFrame(top2).get_file_frame
+frame_file = FileSelectionFrame(top2).get_file_frame
 frame_file.pack(fill=BOTH, expand=YES)
 
 
