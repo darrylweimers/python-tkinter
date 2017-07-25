@@ -1,6 +1,19 @@
 from WidgetTemplate import *
+from tkinter import messagebox
 
 class Application:
+
+
+    def __init__(self):
+        self._root = Tk()
+        self._root.title("Application")
+        self._create_menu_widgets()
+        self._frame, self._text = self._create_text_view_widgets()
+        self._frame.pack(side=TOP, fill=BOTH, expand=YES)
+        self._create_bindings()
+        self.styling(self._frame)
+        self._root.mainloop()
+
     def _file_selection_window(self):
         top = Toplevel(self._root)
         top.title("File path selections")
@@ -13,23 +26,64 @@ class Application:
         frame_file_selection.pack(side=TOP, fill=BOTH, expand=YES)
         frame_data_entry.pack(side=TOP, fill=BOTH, expand=YES)
 
+    @staticmethod
+    def styling(frame=None):
+        for child in frame.winfo_children():
+            child.config(background="black", foreground='blue')
+
+    def _create_bindings(self):
+        self._root.bind('<Control-q>', self._quit)
+        self._text.bind('<Control-y>', self._redo)
 
 
-    def __init__(self):
-        self._root = Tk()
-        self._root.title("Application")
-        self._create_menu_widgets()
-        self._root.mainloop()
+    def _create_text_view_widgets(self):
+        frame = Frame(self._root)
+        text = Text(frame)
+        text.pack(side=TOP, fill=BOTH, expand=YES)
+        text.insert(END, "Hello")
+        return frame, text
+
+    def _quit(self, event=None):
+        if messagebox.askokcancel("Quit Application", "Are you sure you want to quit?"):
+            self._root.quit()
+        return 'break'
+
+    def _redo(self, event=None):
+        self._text.event_generate("<<Redo>>")
+        return 'break'
 
     def _create_menu_widgets(self):
         menu_bar = Menu(self._root)
         self._root.config(menu=menu_bar)
 
-        file_menu = WidgetCreator.create_menu(menu_bar, ['Project files', 'Copy files location'], [self._file_selection_window, None])
+        # file menu
+        file_menu = Menu(menu_bar)
+        file_menu.add_command(label='Project files', command=self._file_selection_window)
+        file_menu.add_command(label='Open files', command=askopenfilenames)
+        file_menu.add_command(label='Open file', command=askopenfilename)
+        file_menu.add_command(label='Save', command=asksaveasfile)
+        file_menu.add_command(label='Directory', command=askdirectory)
+        file_menu.add_command(label="Exit", command=self._quit, accelerator="Ctrl+q")
         menu_bar.add_cascade(label="File", menu=file_menu)
 
+        # edit menu
+        edit_menu = Menu(menu_bar)
+        edit_menu.add_command(label='Cut', command=lambda: self.event_generate("<<Cut>>"),  accelerator="Ctrl+x")
+        edit_menu.add_command(label='Paste', command=lambda: self.event_generate("<<Paste>>"), accelerator="Ctrl+v")
+        edit_menu.add_command(label='Copy', command=lambda: self.event_generate("<<Copy>>"), accelerator="Ctrl+c")
+        menu_bar.add_cascade(label='Edit', menu=edit_menu)
 
+        # view menu
+        view_menu = Menu(menu_bar)
+        view_menu.add_radiobutton()
 
+        # view menu themes
+        theme_menu = Menu(view_menu)
+        radio_button_var = StringVar()
+        theme_menu.add_radiobutton(label='Default', variable=radio_button_var)
+        theme_menu.add_radiobutton(label='Dark Mode', variable=radio_button_var)
+        view_menu.add_cascade(label="Themes", menu=theme_menu)
+        menu_bar.add_cascade(label='View', menu=view_menu)
 
 # top = Toplevel(root)
 # top.title("String replacement set up")
