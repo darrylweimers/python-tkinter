@@ -1,0 +1,43 @@
+from datetime import *
+from time import sleep
+
+class Tracker:
+
+    def __init__(self):
+        self.start_date_time = datetime.today()
+        self.last_update_date_time = self.start_date_time
+        self.end_date_time = None
+        self.time_spent = None
+
+    def pause(self):
+        self.end_date_time = datetime.today()
+        
+        if self.time_spent == None:
+            self.time_spent = self.end_date_time - self.last_update_date_time
+        else:
+            self.time_spent += self.end_date_time - self.last_update_date_time
+        
+        self.last_update_date_time = self.end_date_time
+    
+    def resume(self):
+        
+    def terminate(self):
+        self.pause()
+        return 
+        # TODO: Call destroy
+
+def test_date_time_subtraction(time_delta_seconds=60):
+    start = datetime.today()
+    print(datetime.today())
+    sleep(time_delta_seconds)
+    end = datetime.today()
+    #period = datetime.combine(end.date(), end.time()) - datetime.combine(start.date(), start.time())   # option1 duration 
+    period = end - start # option 2 to compute duration 
+    print(type(period))
+    print(period)
+
+
+test_date_time_subtraction(10)
+
+
+
