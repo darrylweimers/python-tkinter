@@ -1,43 +1,101 @@
 from datetime import *
 from time import sleep
+import enum
+
 
 class Tracker:
 
     def __init__(self):
         self.start_date_time = datetime.today()
-        self.last_update_date_time = self.start_date_time
-        self.end_date_time = None
+        self._last_update_date_time = self.start_date_time
+        self.end_date_time = self._last_update_date_time
         self.time_spent = None
+        self.break_time = None
 
     def pause(self):
+        """Call when user needs a break"""
         self.end_date_time = datetime.today()
-        
-        if self.time_spent == None:
-            self.time_spent = self.end_date_time - self.last_update_date_time
+
+        if self.time_spent is None:
+            self.time_spent = self.end_date_time - self._last_update_date_time
         else:
-            self.time_spent += self.end_date_time - self.last_update_date_time
-        
-        self.last_update_date_time = self.end_date_time
-    
+            self.time_spent += self.end_date_time - self._last_update_date_time
+
+        self._last_update_date_time = self.end_date_time
+
     def resume(self):
-        
+        """Call after pause function to restart counting and returns the pause time"""
+        self.end_date_time = datetime.today()
+
+        if self.break_time is None:
+            self.break_time = self.end_date_time - self._last_update_date_time
+        else:
+            self.break_time += self.end_date_time - self._last_update_date_time
+
+        self._last_update_date_time = self.end_date_time
+        return self.break_time
+
     def terminate(self):
+        """Terminate the task"""
         self.pause()
-        return 
+        return self.time_spent
         # TODO: Call destroy
+
+
+class Priority(enum.Enum):
+    very_low = 0
+    low = 1
+    moderate = 2
+    high = 3
+    very_high = 4
+
+
+class Task(Tracker):
+
+    def __init__(self, title, description=None, priority=Priority.very_low):
+        Tracker.__init__(self)
+        self.title = title
+        self.description = description
+        self.priority = priority
+
+
+class Goal(Task):
+
+    def __init__(self, title, description=None, priority=Priority.very_low, sub_tasks=None):
+        Task.__init__(self, title, description, priority)
+        self.sub_tasks = sub_tasks
+
+
+
 
 def test_date_time_subtraction(time_delta_seconds=60):
     start = datetime.today()
     print(datetime.today())
     sleep(time_delta_seconds)
     end = datetime.today()
-    #period = datetime.combine(end.date(), end.time()) - datetime.combine(start.date(), start.time())   # option1 duration 
-    period = end - start # option 2 to compute duration 
+    #period = datetime.combine(end.date(), end.time()) - datetime.combine(start.date(), start.time())   # option1 duration
+    period = end - start # option 2 to compute duration
     print(type(period))
     print(period)
 
 
-test_date_time_subtraction(10)
+def test_tracker_object(tracker):
+    tracker1 = tracker
+    sleep(30)
+    tracker1.pause()
+    sleep(30)
+    tracker1.resume()
+    sleep(30)
+    tracker1.terminate()
+    print("Start time: {}".format(tracker1.start_date_time.time()))
+    print("End time: {}".format(tracker1.end_date_time.time()))
+    print("Total break time: {}".format(tracker1.break_time))
+    print("Total time spent: {}".format(tracker1.time_spent))
 
 
+def priority_check():
+    for priority in Priority:
+        print("Priority name:{0:<10}\tPriority level:{1:<10}".format(priority.name, priority.value))
 
+#test_tracker_object(Task("Job application"))
+test_tracker_object(Goal("Job application"))
