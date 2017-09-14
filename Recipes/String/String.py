@@ -1,10 +1,13 @@
 
-string = "Convert\ta string to \n raw \tstring"
 
-raw_string = "%r" % string
+def convert_a_string_to_raw_string(string=''):
+    raw_string = "%r" % string
+    return raw_string
 
-print("Raw string:")
-print(raw_string)
-
-print("String:")
-print(string)
+def test_convert_a_string_to_raw_string():
+    string = "Convert\ta string to \n raw \tstring"
+    print("Raw string:")
+    print(convert_a_string_to_raw_string(string))
+    print()
+    print("String:")
+    print(string)
