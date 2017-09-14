@@ -1,6 +1,18 @@
-def read_from_file(open_file_path):
+
+def read_to_string(path):
     try:
-        file_read = open(open_file_path, 'r+')
+        file_read = open(path, 'r+')
+        string = file_read.read()
+        file_read.close()
+        return string
+    except Exception as exception:
+        print(exception)
+
+    return ''
+
+def read_to_array(path):
+    try:
+        file_read = open(path, 'r+')
         lines = file_read.readlines()
         file_read.close()
         return lines
@@ -10,9 +22,9 @@ def read_from_file(open_file_path):
     return []
 
 
-def write_to_file(save_file_path, lines):
+def write(path, lines):
     try:
-        file_write = open(save_file_path, 'w+')
+        file_write = open(path, 'w+')
         file_write.writelines(lines)
         file_write.close()
     except Exception as exception:
