@@ -19,10 +19,10 @@ def test_convert_a_string_to_raw_string_2():
     
 # Remove all occurences of string 
 def remove_all_occurrence_of(string='', substring=''):
-    number_of_occurence = string.count(substring)
-    while(number_of_occurence):
+    number_of_occurrence = string.count(substring)
+    while number_of_occurrence:
         string = remove_first_occurrence_of(string, substring)
-        number_of_occurence -= 1
+        number_of_occurrence -= 1
     return string
 
 
