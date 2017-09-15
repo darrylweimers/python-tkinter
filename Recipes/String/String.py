@@ -1,6 +1,5 @@
 
-# CONVERT A STRING TO A RAW STRING
-
+# Convert a string to a raw string
 def convert_a_string_to_raw_string(string=''):
     raw_string = "%r" % string
     return raw_string
@@ -18,23 +17,23 @@ def test_convert_a_string_to_raw_string_2():
     print(raw_string.count(r'\n'))
 
     
-#remove all occurences of string 
-string = r"Types.h\n\n\nKeepThisPart\n\n\nKeep-this-part"
-index = string.find(r'\n\n\n')
-print(string)
-# for index in range(0, index):
-#     print(string[index], end="")
-# for index in range(index + len(r'\n\n\n') + 1, len(string)):
-#     print(string[index], end="")
-
-print(string[0:index], end='')
-print(string[index + len(r'\n\n\n') + 1: len(string)], end='')
+# Remove all occurences of string 
+def remove_all_occurrence_of(string='', substring=''):
+    number_of_occurence = string.count(substring)
+    while(number_of_occurence):
+        string = remove_first_occurrence_of(string, substring)
+        number_of_occurence -= 1
+    return string
 
 
-print()
-print(string.count(r'\n\n\n'))
+def remove_first_occurrence_of(string='', substring=''):
+    index_substring = string.find(substring)
+    part1 = string[0:index_substring]
+    part2 = string[index_substring + len(substring): len(string)]
+    return part1 + part2
 
+def test_remove_allremove_all_occurrence_of():
+    string = r"Types.h\n\n\nKeepThisPart\n\n\nKeep-this-part"
+    substring = r'\n\n\n'
+    print(remove_all_occurrence_of(string, substring))
 
-
-
-#def remove_occurence_of(string='')
