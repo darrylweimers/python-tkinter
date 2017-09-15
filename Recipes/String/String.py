@@ -35,8 +35,9 @@ def remove_first_occurrence_of(string='', substring=''):
 def test_remove_all_occurrence_of():
     string = r"Types.h\n\n\nKeepThisPart\n\n\nKeep-this-part"
     substring = r'\n\n\n'
-    print(remove_all_occurrence_of(string, substring))
-
+    print("%-35s\t%-30s" % ("String:", string))
+    print("%-35s\t%-30s" % ("Substring:", substring))
+    print("%-35s\t%-30s" % ("String after computation:",remove_all_occurrence_of(string, substring)))
     
 # Replace first/all occurences of string    
 def replace_first_occurrence_of(string='', substring='', replacement_substring=''):
@@ -55,8 +56,9 @@ def replace_all_occurrence_of(string='', substring='', replacement_substring='')
 def test_replace_first_occurrence_of():
     string = r"Types.h\n\n\nKeepThisPart\n\n\nKeep-this-part"
     substring = r'\n\n\n'
-    replacement_substring = r'\n\n'
+    replacement_substring = ' '
     print("%-35s\t%-30s" % ("String:", string))
     print("%-35s\t%-30s" % ("Substring:", substring))
     print("%-35s\t%-30s" % ("String after computation:", replace_first_occurrence_of(string, substring, replacement_substring)))
+
 
