@@ -32,7 +32,7 @@ def remove_first_occurrence_of(string='', substring=''):
     part2 = string[index_substring + len(substring): len(string)]
     return part1 + part2
 
-def test_remove_allremove_all_occurrence_of():
+def test_remove_all_occurrence_of():
     string = r"Types.h\n\n\nKeepThisPart\n\n\nKeep-this-part"
     substring = r'\n\n\n'
     print(remove_all_occurrence_of(string, substring))
