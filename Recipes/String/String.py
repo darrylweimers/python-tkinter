@@ -1,3 +1,4 @@
+import math
 
 # Convert a string to a raw string
 def convert_a_string_to_raw_string(string=''):
@@ -17,7 +18,7 @@ def test_convert_a_string_to_raw_string_2():
     print(raw_string.count(r'\n'))
 
     
-# Remove first/all occurences of string 
+# Remove first/all occurrences of string 
 def remove_all_occurrence_of(string='', substring=''):
     number_of_occurrence = string.count(substring)
     while number_of_occurrence:
@@ -39,7 +40,7 @@ def test_remove_all_occurrence_of():
     print("%-35s\t%-30s" % ("Substring:", substring))
     print("%-35s\t%-30s" % ("String after computation:",remove_all_occurrence_of(string, substring)))
     
-# Replace first/all occurences of string    
+# Replace first/all occurrences of string    
 def replace_first_occurrence_of(string='', substring='', replacement_substring=''):
     index_substring = string.find(substring)
     part1 = string[0:index_substring]
@@ -62,3 +63,14 @@ def test_replace_first_occurrence_of():
     print("%-35s\t%-30s" % ("String after computation:", replace_first_occurrence_of(string, substring, replacement_substring)))
 
 
+# Tweak the maximum newline character for a given string   
+# must import math
+def set_maximum_newlines(string='', max=2):
+    newlines = '\n'
+    substring = newlines * (max + 1)
+    replacement_substring = newlines * max
+    number_of_computation = math.ceil(string.count(newlines) / max)
+    while number_of_computation:
+        string = replace_all_occurrence_of(string, substring, replacement_substring)
+        number_of_computation -= 1
+    return string
