@@ -99,6 +99,7 @@ class Program:
     @classmethod
     def _execute(cls):
         src_path, file_list = cls._get_user_input()
+        # TODO: check if files exist under path
         for file in file_list:
             new_path = os.path.join(src_path, file)
             content = Program.read_to_string(new_path)
