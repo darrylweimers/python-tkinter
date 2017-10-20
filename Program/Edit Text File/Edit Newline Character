@@ -92,7 +92,7 @@ class Program:
         new_list = ','.join(list_of_directory_or_file)
         print("List of files and directory:")
         print(','.join(list_of_directory_or_file))
-        files = input("Enter a file or files (separated by comma for multiple file e.g.file1.txt,file2.txt):")
+        files = input("Enter a file or files (separated by a comma for multiple file e.g.file1.txt,file2.txt):")
         file_list = files.split(',')
         return path, file_list
 
