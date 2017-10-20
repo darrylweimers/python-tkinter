@@ -1,0 +1,111 @@
+import math
+import os
+
+
+class Program:
+
+    @staticmethod
+    def read_to_string(path):
+        try:
+            file_read = open(path, 'r+')
+            string = file_read.read()
+            file_read.close()
+            return string
+        except Exception as exception:
+            print(exception)
+
+        return ''
+
+    # write a list to a file
+    @staticmethod
+    def write(path, lines=[]):
+        try:
+            file_write = open(path, 'w+')
+            file_write.writelines(lines)
+            file_write.close()
+        except Exception as exception:
+            print(exception)
+
+    @staticmethod
+    def write(path, string=''):
+        try:
+            file_write = open(path, 'w+')
+            file_write.write(string)
+            file_write.close()
+        except Exception as exception:
+            print(exception)
+
+    # Remove first/all occurences of string
+    @staticmethod
+    def remove_all_occurrence_of(string='', substring=''):
+        number_of_occurrence = string.count(substring)
+        while number_of_occurrence:
+            string = Program.remove_first_occurrence_of(string, substring)
+            number_of_occurrence -= 1
+        return string
+
+    @staticmethod
+    def remove_first_occurrence_of(string='', substring=''):
+        index_substring = string.find(substring)
+        part1 = string[0:index_substring]
+        part2 = string[index_substring + len(substring): len(string)]
+        return part1 + part2
+
+    @staticmethod
+    def replace_first_occurrence_of(string='', substring='', replacement_substring=''):
+        index_substring = string.find(substring)
+        part1 = string[0:index_substring]
+        part2 = string[index_substring + len(substring): len(string)]
+        return part1 + replacement_substring + part2
+
+    @staticmethod
+    def replace_all_occurrence_of(string='', substring='', replacement_substring=''):
+        number_of_occurrence = string.count(substring)
+        while number_of_occurrence:
+            string = Program.replace_first_occurrence_of(string, substring, replacement_substring)
+            number_of_occurrence -= 1
+        return string
+
+    @staticmethod
+    def set_maximum_newlines(string='', max=2):
+        newlines = '\n'
+        substring = newlines * (max + 1)
+        replacement_substring = newlines * max
+        number_of_computation = math.ceil(string.count(newlines) / max)
+        while number_of_computation:
+            string = Program.replace_all_occurrence_of(string, substring, replacement_substring)
+            number_of_computation -= 1
+        return string
+
+    @classmethod
+    def run(cls):
+        cls._execute()
+        print("completed")
+        print("End of Program")
+
+    @classmethod
+    def _get_user_input(cls):
+        print("Start of Program")
+        print("This program edit text file(s) maximum newline character to 2.")
+        path = input("Enter a directory containing the target text file(s):")
+        list_of_directory_or_file = os.listdir(path)
+        new_list = ','.join(list_of_directory_or_file)
+        print("List of files and directory:")
+        print(','.join(list_of_directory_or_file))
+        files = input("Enter a file or files (separated by comma for multiple file e.g.file1.txt,file2.txt):")
+        file_list = files.split(',')
+        return path, file_list
+
+    @classmethod
+    def _execute(cls):
+        src_path, file_list = cls._get_user_input()
+        for file in file_list:
+            new_path = os.path.join(src_path, file)
+            content = Program.read_to_string(new_path)
+            updated_content = Program.set_maximum_newlines(content, 2)
+            Program.write(new_path, updated_content)
+
+
+Program.run()
+
+
